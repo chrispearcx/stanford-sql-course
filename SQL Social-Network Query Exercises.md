@@ -1,20 +1,24 @@
 # Stanford SQL Mini-Course Query Exercises
-## SQL Movie-Rating Query Exercises
+## SQL Social-Network Query Exercises
 
-You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies. There's not much data yet, but you can still try out some interesting queries. Here's the schema: 
+Students at your hometown high school have decided to organize their social network using databases. So far, they have collected information about sixteen students in four grades, 9-12. Here's the schema: 
 
-Movie ( mID, title, year, director ) 
-English: There is a movie with ID number mID, a title, a release year, and a director. 
+Highschooler ( ID, name, grade ) 
+English: There is a high school student with unique ID and a given first name in a certain grade. 
 
-Reviewer ( rID, name ) 
-English: The reviewer with ID number rID has a certain name. 
+Friend ( ID1, ID2 ) 
+English: The student with ID1 is friends with the student with ID2. Friendship is mutual, so if (123, 456) is in the Friend table, so is (456, 123). 
 
-Rating ( rID, mID, stars, ratingDate ) 
-English: The reviewer rID gave the movie mID a number of stars rating (1-5) on a certain ratingDate. 
+Likes ( ID1, ID2 ) 
+English: The student with ID1 likes the student with ID2. Liking someone is not necessarily mutual, so if (123, 456) is in the Likes table, there is no guarantee that (456, 123) is also present.
 
-Your queries will run over a small data set conforming to the schema. [View the database](https://lagunita.stanford.edu/c4x/DB/SQL/asset/moviedata.html). (You can also [download the schema and data](https://s3-us-west-2.amazonaws.com/prod-c2g/db/Winter2013/files/rating.sql).)
+Your queries will run over a small data set conforming to the schema. [View the database](https://lagunita.stanford.edu/c4x/DB/SQL/asset/socialdata.html). (You can also [download the schema and data](https://s3-us-west-2.amazonaws.com/prod-c2g/db/Winter2013/files/social.sql).)  
 
-**Instructions:** Each problem asks you to write a query in SQL. When you click "Check Answer" our back-end runs your query against the sample database using SQLite. It displays the result and compares your answer against the correct one. When you're satisfied with your solution for a given problem, click the "Submit" button to check your answer.  
+For your convenience, here is a graph showing the various connections between the students in our database. 9th graders are blue, 10th graders are green, 11th graders are yellow, and 12th graders are purple. Undirected black edges indicate friendships, and directed red edges indicate that one student likes another student.
+
+![alt text](https://lagunita.stanford.edu/c4x/DB/SQL/asset/social.png "Logo Title Text 1")
+
+**Instructions:** Each problem asks you to write a query in SQL. To run your query against our back-end sample database using SQLite, click the "Submit" button. You will see a display of your query result and the expected result. If the results match, your query will be marked "correct". You may run as many queries as you like for each question.  
 
 **Important Notes:**
 
