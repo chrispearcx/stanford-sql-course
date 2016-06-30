@@ -47,7 +47,7 @@ where rating.mid is null;
 #####4. Some reviewers didn't provide a date with their rating. Find the names of all reviewers who have ratings with a NULL value for the date. 
 ```sql
 select name
-from rating  left join reviewer using (rid)
+from rating left join reviewer using (rid)
 where ratingdate is null;
 ```
 #####5. Write a query to return the ratings data in a more readable format: reviewer name, movie title, stars, and ratingDate. Also, sort the data, first by reviewer name, then by movie title, and lastly by number of stars. 
@@ -86,15 +86,17 @@ order by rating_spread desc, title;
 #####9. Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
 ```sql
 select avg(star1) - avg(star2)
-from 
-    (select mid,avg(stars) as star1
+from (
+    select mid, avg(stars) as star1
     from rating left join movie using (mid)
     where year < 1980
-    group by mid) as before,
-    (select mid,avg(stars) as star2
+    group by mid
+    ) as before, (
+    select mid,avg(stars) as star2
     from rating left join movie using (mid)
     where year > 1980
-    group by mid) as after;
+    group by mid
+    ) as after;
 ```
 
 ## Extras
