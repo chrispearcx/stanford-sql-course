@@ -33,7 +33,7 @@ where director = "Steven Spielberg";
 ```
 #####2. Find all years that have a movie that received a rating of 4 or 5, and sort them in increasing order. 
 ```sql
-select distinct year
+select distinct year -- DISTINCT
 from rating left join movie using (mid)
 where stars > 3
 order by year;
@@ -58,14 +58,18 @@ from rating
     left join movie using (mid)
 order by name, title, stars;
 ```
-#####6. For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time, return the reviewer's name and the title of the movie. 
+#####6. ???For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time, return the reviewer's name and the title of the movie. 
 ```sql
 select name, title
 from (
 	select r2.rid, r2.mid
     from rating r1, rating r2
-    where r1.rid = r2.rid and r1.mid = r2.mid and r1.ratingdate < r2.ratingdate and r1.stars < r2.stars
-    ) subset
+    where
+        r1.rid = r2.rid and     
+        r1.mid = r2.mid and 
+        r1.ratingdate < r2.ratingdate and 
+        r1.stars < r2.stars
+    ) sub
     left join movie using (mid)
     left join reviewer using (rid);
 ```
@@ -83,7 +87,7 @@ from rating left join movie using(mid)
 group by title
 order by rating_spread desc, title;
 ```
-#####9. Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
+#####9. ???Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
 ```sql
 select avg(star1) - avg(star2)
 from (
@@ -102,7 +106,7 @@ from (
 ## Extras
 #####1. Find the names of all reviewers who rated Gone with the Wind. 
 ```sql
-select distinct name
+select distinct name -- DISTINCT
 from rating left join reviewer using (rid) left join movie using(mid)
 where title = 'Gone with the Wind';
 ```
@@ -121,19 +125,20 @@ union
 select title from movie
 order by 1;
 ```
-#####4. Find the titles of all movies not reviewed by Chris Jackson. 
+#####4. ???Find the titles of all movies not reviewed by Chris Jackson. 
 ```sql
 select title
 from movie
-where mid not in (select mid 
-                  from rating
-                  where rid = (select rid 
-                               from reviewer 
-                               where name = 'Chris Jackson'))
+where mid not in (
+    select mid 
+    from rating
+        left join reviewer using (rid)
+    where name = "Chris Jackson"
+    )
 ```
-#####5. For all pairs of reviewers such that both reviewers gave a rating to the same movie, return the names of both reviewers. Eliminate duplicates, don't pair reviewers with themselves, and include each pair only once. For each pair, return the names in the pair in alphabetical order. 
+#####5. ???For all pairs of reviewers such that both reviewers gave a rating to the same movie, return the names of both reviewers. Eliminate duplicates, don't pair reviewers with themselves, and include each pair only once. For each pair, return the names in the pair in alphabetical order. 
 ```sql
-select distinct re1.name, re2.name 
+select distinct re1.name, re2.name -- DISTINCT
 from rating r1, rating r2, reviewer re1, reviewer re2
 where re1.rid = r1.rid and re2.rid = r2.rid
 and re1.name < re2.name and r1.mid = r2.mid;
@@ -148,10 +153,11 @@ where stars = (select min(stars) from rating);
 ```
 #####7. List movie titles and average ratings, from highest-rated to lowest-rated. If two or more movies have the same average rating, list them in alphabetical order. 
 ```sql
-select title, avg(stars) as s
-from rating left join movie using (mid)
+select title, avg(stars)
+from rating
+    left join movie using (mid)
 group by title
-order by s desc, title;
+order by avg(stars) desc, title;
 ```
 #####8. Find the names of all reviewers who have contributed three or more ratings. (As an extra challenge, try writing the query without HAVING or without COUNT.) 
 ```sql
@@ -171,17 +177,17 @@ where director in (
     having count(*) > 1)
 order by director, title;
 ```
-#####10. Find the movie(s) with the highest average rating. Return the movie title(s) and average rating. (Hint: This query is more difficult to write in SQLite than other systems; you might think of it as finding the highest average rating and then choosing the movie(s) with that average rating.) 
+#####10. ???Find the movie(s) with the highest average rating. Return the movie title(s) and average rating. (Hint: This query is more difficult to write in SQLite than other systems; you might think of it as finding the highest average rating and then choosing the movie(s) with that average rating.) 
 ```sql
 select title, avg(stars)
 from rating left join movie using (mid)
 group by title
 having avg(stars) = 
     (
-    select max(avgStars)
+    select max(avg_stars)
     from 
         (
-        select mid, avg(stars) as avgStars
+        select mid, avg(stars) as avg_stars
         from rating
         group by mid
         )
@@ -203,15 +209,11 @@ having avg(stars) =
         )
     )
 ```
-#####12. For each director, return the director's name together with the title(s) of the movie(s) they directed that received the highest rating among all of their movies, and the value of that rating. Ignore movies whose director is NULL. 
+#####12. ??????For each director, return the director's name together with the title(s) of the movie(s) they directed that received the highest rating among all of their movies, and the value of that rating. Ignore movies whose director is NULL. 
 ```sql
-Select Movie.title,
-       MAX(A.rate),
-       Movie.director 
-from (Select  rID, mID, AVG(stars) as rate, ratingDate 
-                       From Rating Group By mID
-                       ) A 
-       Inner Join Movie on A.mID=Movie.mID  
-where Movie.director is not NULL
-group by Movie.director;
+select distinct director, title, stars
+from (movie left join rating using (mid)) m
+where stars in (select max(stars) 
+                from rating left join movie using (mid) 
+                where m.director = director);
 ```
